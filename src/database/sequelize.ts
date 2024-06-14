@@ -91,6 +91,19 @@ export const User = sequelize.define('User', {
         unique: true,
         allowNull: false
     },
+    email_verified: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    },
+    two_factor_authentication_enabled: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    },
+    two_factor_authentication_secret: {
+        type: DataTypes.STRING,
+    },
     password: {
         type: DataTypes.STRING,
         allowNull: false
