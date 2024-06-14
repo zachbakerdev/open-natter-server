@@ -1,65 +1,84 @@
 # Project Title
 
-Simple overview of use/purpose.
+Open Natter Server
 
 ## Description
 
-An in-depth paragraph about your project and overview of use.
+Apps like Discord are great, but now, Discord is adding advertisements. This hurts the usability of the platform and OpenNatter is my attempt at designing an effective alternative.
+
+In addition, the second goal of OpenNatter is to provide a solution for secure internal communications within companies that:
+
+1. Don't want to spend money on Teams or Slack
+2. Must manage their own data on premises
+3. Need customized features that are unique to their organization
+
+The open source nature of this project is designed to encourage companies and individuals to modify code and contribute functionality ot better suit their needs and the needs of others.
 
 ## Getting Started
 
-### Dependencies
+### Prerequisites
 
-* Describe any prerequisites, libraries, OS version, etc., needed before installing program.
-* ex. Windows 10
+* NodeJS v22.3.0+
+* NPM v10.8.1+
+* Latest version of Visual Studio Code
+  * ESLint extension (v2.4.4+)
+  * Prettier extension (v10.4.0+)
 
-### Installing
+### Installation
 
-* How/where to download your program
-* Any modifications needed to be made to files/folders
+To get started, clone the repository
+
+```sh
+git clone git@github.com:zachbakerdev/open-natter-server.git
+```
+
+Change the directory
+
+```sh
+cd open-natter-server
+```
+
+And run NPM install
+
+```sh
+npm i
+```
 
 ### Executing program
 
-* How to run the program
-* Step-by-step bullets
+To run the development server, run
 
-```lang-none
-code blocks for commands
+```sh
+npm run start
 ```
 
-## Help
+To build the production server run
 
-Any advise for common problems or issues.
+```sh
+npm run build
+```
 
-```lang-none
-command to run if program contains helper info
+To lint the project, run
+
+```sh
+npm run lint
 ```
 
 ## Authors
 
-Contributors names and contact info
+Zach Baker - [@zachbakerdev](https://github.com/zachbakerdev) - [zach@zachbaker.dev](mailto:zach@zachbaker.dev)
 
-ex. Dominique Pizzie  
-ex. [@DomPizzie](https://twitter.com/dompizzie)
+## Contributing
 
-## Version History
+For all rules around contributing, please see [CONTRIBUTING](CONTRIBUTING.md).
 
-* 0.2
-  * Various bug fixes and optimizations
-  * See [commit change](about:blank) or See [release history](about:blank)
-* 0.1
-  * Initial Release
+In addition, financial support is greatly appreciated and allows me to justify spending time working on things like this. You can donate [here](https://ko-fi.com/zachbakerdev).
 
 ## License
 
-This project is licensed under the [NAME HERE] License - see the LICENSE.md file for details
+This project is licensed under the MIT License - see the LICENSE.md file for details
 
 ## Acknowledgments
 
-Inspiration, code snippets, etc.
-
-* [awesome-readme](https://github.com/matiassingers/awesome-readme)
-* [PurpleBooth](https://gist.github.com/PurpleBooth/109311bb0361f32d87a2)
-* [dbader](https://github.com/dbader/readme-template)
-* [zenorocha](https://gist.github.com/zenorocha/4526327)
-* [fvcproductions](https://gist.github.com/fvcproductions/1bfc2d4aecb01a834b46)
+* [@DomPizzie](https://github.com/DomPizzie) for his awesome [README template](https://gist.github.com/DomPizzie/7a5ff55ffa9081f2de27c315f5018afc)
+* [@qoomon](https://github.com/qoomon) for his amazing [Convential Commit Messages Cheatsheet](https://gist.github.com/qoomon/5dfcdf8eec66a051ecd85625518cfd13)
