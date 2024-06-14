@@ -18,11 +18,11 @@ The open source nature of this project is designed to encourage companies and in
 
 ### Prerequisites
 
-* NodeJS v22.3.0+
-* NPM v10.8.1+
-* Latest version of Visual Studio Code
-  * ESLint extension (v2.4.4+)
-  * Prettier extension (v10.4.0+)
+- NodeJS v22.3.0+
+- NPM v10.8.1+
+- Latest version of Visual Studio Code
+  - ESLint extension (v2.4.4+)
+  - Prettier extension (v10.4.0+)
 
 ### Installation
 
@@ -80,5 +80,5 @@ This project is licensed under the MIT License - see the LICENSE.md file for det
 
 ## Acknowledgments
 
-* [@DomPizzie](https://github.com/DomPizzie) for his awesome [README template](https://gist.github.com/DomPizzie/7a5ff55ffa9081f2de27c315f5018afc)
-* [@qoomon](https://github.com/qoomon) for his amazing [Convential Commit Messages Cheatsheet](https://gist.github.com/qoomon/5dfcdf8eec66a051ecd85625518cfd13)
+- [@DomPizzie](https://github.com/DomPizzie) for his awesome [README template](https://gist.github.com/DomPizzie/7a5ff55ffa9081f2de27c315f5018afc)
+- [@qoomon](https://github.com/qoomon) for his amazing [Convential Commit Messages Cheatsheet](https://gist.github.com/qoomon/5dfcdf8eec66a051ecd85625518cfd13)
