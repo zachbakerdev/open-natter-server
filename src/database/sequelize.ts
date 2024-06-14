@@ -75,7 +75,7 @@ sequelize.authenticate().catch(err => {
 
 // Definitions
 export const User = sequelize.define('User', {
-    id: {
+    uuid: {
         type: DataTypes.UUID,
         allowNull: false,
         primaryKey: true,
@@ -83,10 +83,12 @@ export const User = sequelize.define('User', {
     },
     username: {
         type: DataTypes.STRING,
+        unique: true,
         allowNull: false
     },
     email: {
         type: DataTypes.STRING,
+        unique: true,
         allowNull: false
     },
     password: {
@@ -94,6 +96,8 @@ export const User = sequelize.define('User', {
         allowNull: false
     }
 });
+
+
 
 // Sync database
 sequelize.sync().then(() => {
