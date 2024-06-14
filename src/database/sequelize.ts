@@ -1,6 +1,6 @@
+import pino from "pino";
 import { DataTypes, Dialect, Options, Sequelize } from "sequelize";
 import logger from "../util/logger";
-import pino from "pino";
 
 // Create logger
 const sequalizeLogger = pino({
@@ -114,6 +114,18 @@ export const User = sequelize.define("User", {
         allowNull: false,
     },
 });
+
+export const Server = sequelize.define("Server", {
+    uuid: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        primaryKey: true,
+        defaultValue: DataTypes.UUIDV4,
+    },
+});
+
+User.hasMany(Server, { foreignKey: "ownerUuid" });
+Server.belongsTo(User, { as: "owner" });
 
 // Sync database
 sequelize
