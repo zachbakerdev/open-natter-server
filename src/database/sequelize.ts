@@ -79,7 +79,7 @@ export const User = sequelize.define('User', {
 sequelize.sync().then(() => {
     logger.info("Database Sync Completed");
 }).catch(err => {
-    logger.fatal("Database Sync Failed");
+    logger.fatal(err, "Database Sync Failed");
     process.exit(1);
 });
 
