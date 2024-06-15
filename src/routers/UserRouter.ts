@@ -1,8 +1,9 @@
 import { argon2id, hash } from "argon2";
 import express from "express";
 import strings from "../constants/strings";
-import { User } from "../database/sequelize";
+import { User, UserVerificationEmail } from "../database/sequelize";
 import logger from "../util/logger";
+import { sendVerificationEmail } from "../util/mailer";
 
 const UserRouter = express.Router();
 
@@ -57,11 +58,18 @@ UserRouter.post("/register", async (req, res) => {
         const hashed_password = await hash(password, { type: argon2id });
 
         // Create user
-        await User.create({
+        const user = await User.create({
             username,
             email,
             password: hashed_password,
         });
+
+        const verification = await UserVerificationEmail.create({
+            userUuid: user.uuid,
+        });
+
+        // Send the verification email
+        await sendVerificationEmail(user.email, verification.uuid);
 
         // Return success
         res.status(200).json({ msg: strings.register_success });
