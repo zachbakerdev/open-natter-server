@@ -3,7 +3,7 @@ import { DataTypes, Dialect, Options, Sequelize } from "sequelize";
 import logger from "../util/logger";
 
 // Create logger
-const sequalizeLogger = pino({
+const sequelizeLogger = pino({
     transport: {
         target: "pino-pretty",
         options: {
@@ -30,7 +30,7 @@ const {
 // Check for valid dialect
 const AVAILALBE_DIALECTS = ["mysql", "postgres", "sqlite", "mariadb"];
 if (!NATTER_DB_DIALECT || !AVAILALBE_DIALECTS.includes(NATTER_DB_DIALECT)) {
-    sequalizeLogger.fatal("Invalid Dialect");
+    sequelizeLogger.fatal("Invalid Dialect");
     logger.fatal("Invalid Dialect");
     process.exit(1);
 }
@@ -54,7 +54,7 @@ const sequelizeParams: Options =
         ? {
               dialect: "sqlite",
               storage: NATTER_DB_HOST,
-              logging: (msg) => sequalizeLogger.info(msg),
+              logging: (msg) => sequelizeLogger.info(msg),
           }
         : {
               dialect: NATTER_DB_DIALECT as Dialect,
@@ -65,7 +65,7 @@ const sequelizeParams: Options =
               port: NATTER_DB_PORT
                   ? Number(NATTER_DB_PORT)
                   : getDefaultDatabasePort(NATTER_DB_DIALECT as Dialect),
-              logging: (msg) => sequalizeLogger.info(msg),
+              logging: (msg) => sequelizeLogger.info(msg),
           };
 
 // Create connection
@@ -73,7 +73,7 @@ const sequelize = new Sequelize(sequelizeParams);
 
 // Test authentication
 sequelize.authenticate().catch((err) => {
-    sequalizeLogger.fatal("Failed to authenticate database", err);
+    sequelizeLogger.fatal("Failed to authenticate database", err);
     logger.fatal("Failed to authenticate database", err);
     process.exit(1);
 });
@@ -131,11 +131,11 @@ Server.belongsTo(User, { as: "owner" });
 sequelize
     .sync({ alter: true })
     .then(() => {
-        sequalizeLogger.info("Database Sync Completed");
+        sequelizeLogger.info("Database Sync Completed");
         logger.info("Database Sync Completed");
     })
     .catch((err) => {
-        sequalizeLogger.fatal(err, "Database Sync Failed");
+        sequelizeLogger.fatal(err, "Database Sync Failed");
         logger.fatal(err, "Database Sync Failed");
         process.exit(1);
     });
