@@ -79,7 +79,8 @@ sequelize.authenticate().catch((err) => {
 });
 
 // Definitions
-export const User = sequelize.define("User", {
+// User
+export const User = sequelize.define("user", {
     uuid: {
         type: DataTypes.UUID,
         allowNull: false,
@@ -115,7 +116,8 @@ export const User = sequelize.define("User", {
     },
 });
 
-export const Server = sequelize.define("Server", {
+// Server
+export const Server = sequelize.define("server", {
     uuid: {
         type: DataTypes.UUID,
         allowNull: false,
@@ -123,9 +125,115 @@ export const Server = sequelize.define("Server", {
         defaultValue: DataTypes.UUIDV4,
     },
 });
-
+// User -> Server
 User.hasMany(Server, { foreignKey: "ownerUuid" });
 Server.belongsTo(User, { as: "owner" });
+
+// Audit log
+export const AuditLog = sequelize.define("auditLog", {
+    uuid: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        primaryKey: true,
+        defaultValue: DataTypes.UUIDV4,
+    },
+    msg: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+    },
+});
+// Server -> AuditLog
+Server.hasMany(AuditLog, { foreignKey: "auditLogUuid" });
+AuditLog.belongsTo(Server, { as: "auditLog" });
+// User -> AuditLog
+User.hasMany(AuditLog, { foreignKey: "userUuid" });
+AuditLog.hasOne(User, { as: "user" });
+
+// Channel
+export const Channel = sequelize.define("channel", {
+    uuid: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        primaryKey: true,
+        defaultValue: DataTypes.UUIDV4,
+    },
+    type: {
+        type: DataTypes.ENUM("text", "voice"),
+        allowNull: false,
+    },
+    defaultPermissions: {
+        type: DataTypes.JSON,
+        allowNull: false,
+    },
+});
+// Server and channel
+Server.hasMany(Channel, { foreignKey: "channelUuid" });
+Channel.belongsTo(Server, { as: "channel" });
+
+// Role
+export const Role = sequelize.define("role", {
+    uuid: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        primaryKey: true,
+        defaultValue: DataTypes.UUIDV4,
+    },
+    permissions: {
+        type: DataTypes.JSON,
+        allowNull: false,
+    },
+});
+// Server -> Role
+Server.hasMany(Role, { foreignKey: "roleUuid" });
+Role.belongsTo(Server, { as: "role" });
+
+// User Roles
+const UserRoleAssignment = sequelize.define("userRoleAssignment", {
+    uuid: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        primaryKey: true,
+        defaultValue: DataTypes.UUIDV4,
+    },
+});
+// Role <-> User
+User.belongsToMany(Role, { through: UserRoleAssignment });
+Role.belongsToMany(User, { through: UserRoleAssignment });
+
+// Channel Roles
+const ChannelRoleAssignment = sequelize.define("channelRoleAssignment", {
+    uuid: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        primaryKey: true,
+        defaultValue: DataTypes.UUIDV4,
+    },
+    overridePermissions: {
+        type: DataTypes.JSON,
+    },
+});
+// Role <-> Channel
+Channel.belongsToMany(Role, { through: ChannelRoleAssignment });
+Role.belongsToMany(Channel, { through: ChannelRoleAssignment });
+
+// User Channel Overrides
+const UserChannelOverride = sequelize.define("userChannelOverride", {
+    uuid: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        primaryKey: true,
+        defaultValue: DataTypes.UUIDV4,
+    },
+    overridePermissions: {
+        type: DataTypes.JSON,
+    },
+});
+// User -> UserChannelOverride
+User.hasMany(UserChannelOverride, { foreignKey: "userUuid" });
+UserChannelOverride.belongsTo(User, { as: "user" });
+// Channel -> UserChannelOverride
+Channel.hasMany(UserChannelOverride, { foreignKey: "channelUuid" });
+UserChannelOverride.belongsTo(Channel, { as: "channel" });
 
 // Sync database
 sequelize
