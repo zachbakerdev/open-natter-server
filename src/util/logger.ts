@@ -11,6 +11,8 @@ const logger = pino({
             colorize: false,
             append: false,
             minimumLevel: NATTER_LOG_LEVEL ?? "info",
+            ignore: "hostname,pid",
+            translateTime: "SYS:yyyy-mm-dd HH:MM:ss",
         },
     },
 });

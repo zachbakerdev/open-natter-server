@@ -10,9 +10,10 @@ const sequelizeLogger = pino({
             destination: "./logs/database.log",
             mkdir: true,
             colorize: false,
-            include: "time,level",
             append: true,
             minimumLevel: "info",
+            ignore: "hostname,pid",
+            translateTime: "SYS:yyyy-mm-dd HH:MM:ss",
         },
     },
 });
