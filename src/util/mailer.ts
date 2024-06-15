@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import SMTPTransport from "nodemailer/lib/smtp-transport";
 import logger from "./logger";
 
 const {
@@ -42,11 +43,15 @@ transporter
         process.exit(1);
     });
 
-export const sendVerificationEmail = (email: string, code: string): void => {
+export const sendVerificationEmail = (
+    email: string,
+    code: string,
+): Promise<SMTPTransport.SentMessageInfo> | null => {
     if (!NATTER_MAIL_ENABLED) {
         logger.warn({ email, code }, "Could not send verification email");
+        return null;
     }
-    transporter.sendMail({
+    return transporter.sendMail({
         to: email,
         subject: "Open Natter Email verification",
         html: `<h1>Your Verification Code is ${code}`,
