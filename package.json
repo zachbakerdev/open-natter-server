@@ -21,6 +21,7 @@
     "pino": "^9.2.0",
     "pino-pretty": "^11.2.1",
     "sequelize": "^6.37.3",
+    "sequelize-typescript": "^2.1.6",
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
