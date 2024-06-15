@@ -1,5 +1,13 @@
 import pino from "pino";
-import { DataTypes, Dialect, Options, Sequelize } from "sequelize";
+import { DataTypes, Dialect, Model, Options, Sequelize } from "sequelize";
+import {
+    Column,
+    Default,
+    NotNull,
+    PrimaryKey,
+    Table,
+    Unique,
+} from "sequelize-typescript";
 import logger from "../util/logger";
 
 // Create logger
@@ -81,159 +89,186 @@ sequelize.authenticate().catch((err) => {
 
 // Definitions
 // User
-export const User = sequelize.define("user", {
-    uuid: {
-        type: DataTypes.UUID,
-        allowNull: false,
-        primaryKey: true,
-        defaultValue: DataTypes.UUIDV4,
-    },
-    username: {
-        type: DataTypes.STRING,
-        unique: true,
-        allowNull: false,
-    },
-    email: {
-        type: DataTypes.STRING,
-        unique: true,
-        allowNull: false,
-    },
-    email_verified: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: false,
-    },
-    two_factor_authentication_enabled: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: false,
-    },
-    two_factor_authentication_secret: {
-        type: DataTypes.STRING,
-    },
-    password: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-});
+@Table
+export class User extends Model {
+    @Column(DataTypes.UUID)
+    @PrimaryKey
+    @NotNull
+    @Default(DataTypes.UUIDV4)
+    uuid: string;
+
+    @Column(DataTypes.STRING)
+    @Unique
+    @NotNull
+    username: string;
+
+    @Column(DataTypes.STRING)
+    @Unique
+    @NotNull
+    email: string;
+
+    @Column(DataTypes.BOOLEAN)
+    @NotNull
+    @Default(false)
+    email_verified: boolean;
+
+    @Column(DataTypes.BOOLEAN)
+    @NotNull
+    @Default(false)
+    two_factor_authentication_enabled: boolean;
+
+    @Column(DataTypes.TEXT)
+    two_factor_authentication_secret: string;
+
+    @Column(DataTypes.STRING)
+    @NotNull
+    password: string;
+}
+
+@Table
+export class UserVerificationEmail extends Model {
+    @Column(DataTypes.UUID)
+    @PrimaryKey
+    @NotNull
+    @Default(DataTypes.UUIDV4)
+    uuid: string;
+}
+
+User.hasOne(UserVerificationEmail, { foreignKey: { allowNull: false } });
+UserVerificationEmail.belongsTo(User);
 
 // Server
-export const Server = sequelize.define("server", {
-    uuid: {
-        type: DataTypes.UUID,
-        allowNull: false,
-        primaryKey: true,
-        defaultValue: DataTypes.UUIDV4,
-    },
-});
+@Table
+export class Server extends Model {
+    @Column(DataTypes.UUID)
+    @PrimaryKey
+    @NotNull
+    @Default(DataTypes.UUIDV4)
+    uuid: string;
+}
 // User -> Server
-User.hasMany(Server, { foreignKey: "ownerUuid" });
+User.hasMany(Server, { foreignKey: { name: "ownerUuid", allowNull: false } });
 Server.belongsTo(User, { as: "owner" });
 
 // Audit log
-export const AuditLog = sequelize.define("auditLog", {
-    uuid: {
-        type: DataTypes.UUID,
-        allowNull: false,
-        primaryKey: true,
-        defaultValue: DataTypes.UUIDV4,
-    },
-    msg: {
-        type: DataTypes.TEXT,
-        allowNull: false,
-    },
-});
+@Table
+export class AuditLog extends Model {
+    @Column(DataTypes.UUID)
+    @PrimaryKey
+    @NotNull
+    @Default(DataTypes.UUIDV4)
+    uuid: string;
+
+    @Column(DataTypes.TEXT)
+    @NotNull
+    msg: string;
+}
 // Server -> AuditLog
-Server.hasMany(AuditLog, { foreignKey: "auditLogUuid" });
+Server.hasMany(AuditLog, {
+    foreignKey: { name: "auditLogUuid", allowNull: false },
+});
 AuditLog.belongsTo(Server, { as: "auditLog" });
 // User -> AuditLog
-User.hasMany(AuditLog, { foreignKey: "userUuid" });
+User.hasMany(AuditLog, { foreignKey: { name: "userUuid", allowNull: false } });
 AuditLog.belongsTo(User, { as: "user" });
 
 // Channel
-export const Channel = sequelize.define("channel", {
-    uuid: {
-        type: DataTypes.UUID,
-        allowNull: false,
-        primaryKey: true,
-        defaultValue: DataTypes.UUIDV4,
-    },
-    type: {
-        type: DataTypes.ENUM("text", "voice"),
-        allowNull: false,
-    },
-    defaultPermissions: {
-        type: DataTypes.JSON,
-        allowNull: false,
-    },
-});
+@Table
+export class Channel extends Model {
+    @Column(DataTypes.UUID)
+    @PrimaryKey
+    @NotNull
+    @Default(DataTypes.UUIDV4)
+    uuid: string;
+
+    @Column(DataTypes.ENUM("text", "voice"))
+    @NotNull
+    type: string;
+
+    @Column(DataTypes.JSON)
+    @NotNull
+    defaultPermissions: object;
+}
 // Server and channel
-Server.hasMany(Channel, { foreignKey: "channelUuid" });
+Server.hasMany(Channel, {
+    foreignKey: { name: "channelUuid", allowNull: false },
+});
 Channel.belongsTo(Server, { as: "channel" });
 
 // Role
-export const Role = sequelize.define("role", {
-    uuid: {
-        type: DataTypes.UUID,
-        allowNull: false,
-        primaryKey: true,
-        defaultValue: DataTypes.UUIDV4,
-    },
-    permissions: {
-        type: DataTypes.JSON,
-        allowNull: false,
-    },
-});
+@Table
+export class Role extends Model {
+    @Column(DataTypes.UUID)
+    @PrimaryKey
+    @NotNull
+    @Default(DataTypes.UUIDV4)
+    uuid: string;
+
+    @Column(DataTypes.JSON)
+    @NotNull
+    permissions: object;
+}
 // Server -> Role
-Server.hasMany(Role, { foreignKey: "roleUuid" });
+Server.hasMany(Role, { foreignKey: { name: "roleUuid", allowNull: false } });
 Role.belongsTo(Server, { as: "role" });
 
 // User Roles
-const UserRoleAssignment = sequelize.define("userRoleAssignment", {
-    uuid: {
-        type: DataTypes.UUID,
-        allowNull: false,
-        primaryKey: true,
-        defaultValue: DataTypes.UUIDV4,
-    },
-});
+@Table
+export class UserRoleAssignment extends Model {
+    @Column(DataTypes.UUID)
+    @PrimaryKey
+    @NotNull
+    @Default(DataTypes.UUIDV4)
+    uuid: string;
+}
 // Role <-> User
 User.belongsToMany(Role, { through: UserRoleAssignment });
 Role.belongsToMany(User, { through: UserRoleAssignment });
 
 // Channel Roles
-const ChannelRoleAssignment = sequelize.define("channelRoleAssignment", {
-    uuid: {
-        type: DataTypes.UUID,
-        allowNull: false,
-        primaryKey: true,
-        defaultValue: DataTypes.UUIDV4,
-    },
-    overridePermissions: {
-        type: DataTypes.JSON,
-    },
-});
+@Table
+export class ChannelRoleAssignment extends Model {
+    @Column
+    @PrimaryKey
+    @NotNull
+    @Default(DataTypes.UUIDV4)
+    uuid: string;
+
+    @Column(DataTypes.JSON)
+    @NotNull
+    overridePermissions: object;
+}
 // Role <-> Channel
 Channel.belongsToMany(Role, { through: ChannelRoleAssignment });
 Role.belongsToMany(Channel, { through: ChannelRoleAssignment });
 
 // User Channel Overrides
-const UserChannelOverride = sequelize.define("userChannelOverride", {
-    uuid: {
-        type: DataTypes.UUID,
+export class UserChannelOverride extends Model {
+    @Column(DataTypes.UUID)
+    @PrimaryKey
+    @NotNull
+    @Default(DataTypes.UUIDV4)
+    uuid: string;
+
+    @Column(DataTypes.JSON)
+    @NotNull
+    overridePermissions: object;
+}
+// User -> UserChannelOverride
+User.hasMany(UserChannelOverride, {
+    foreignKey: {
+        name: "userUuid",
         allowNull: false,
-        primaryKey: true,
-        defaultValue: DataTypes.UUIDV4,
-    },
-    overridePermissions: {
-        type: DataTypes.JSON,
     },
 });
-// User -> UserChannelOverride
-User.hasMany(UserChannelOverride, { foreignKey: "userUuid" });
 UserChannelOverride.belongsTo(User, { as: "user" });
 // Channel -> UserChannelOverride
-Channel.hasMany(UserChannelOverride, { foreignKey: "channelUuid" });
+Channel.hasMany(UserChannelOverride, {
+    foreignKey: {
+        name: "channelUuid",
+        allowNull: false,
+    },
+});
 UserChannelOverride.belongsTo(Channel, { as: "channel" });
 
 // Sync database
