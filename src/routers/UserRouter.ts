@@ -57,7 +57,7 @@ UserRouter.post("/register", async (req, res) => {
         const hashed_password = await hash(password, { type: argon2id });
 
         // Create user
-        const user = await User.create({
+        await User.create({
             username,
             email,
             password: hashed_password,
