@@ -147,7 +147,7 @@ Server.hasMany(AuditLog, { foreignKey: "auditLogUuid" });
 AuditLog.belongsTo(Server, { as: "auditLog" });
 // User -> AuditLog
 User.hasMany(AuditLog, { foreignKey: "userUuid" });
-AuditLog.hasOne(User, { as: "user" });
+AuditLog.belongsTo(User, { as: "user" });
 
 // Channel
 export const Channel = sequelize.define("channel", {
