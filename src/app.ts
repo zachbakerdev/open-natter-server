@@ -1,14 +1,19 @@
 import express from "express";
+import UserRouter from "./routers/UserRouter";
 import logger from "./util/logger";
 
+// Define port
 const port = 8080;
 
+// Create app
 const app = express();
 
-app.get("*", (req, res) => {
-    res.send("Hello world!");
-});
+// Enable JSON parsing
+app.use(express.json());
 
-app.listen(port, async () => {
+// Routers
+app.use("/user", UserRouter);
+
+app.listen(port, () => {
     logger.info(`App listening on port ${port}.`);
 });
