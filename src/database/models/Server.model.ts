@@ -22,6 +22,10 @@ class Server extends Model {
     @Column(DataTypes.UUID)
     uuid: string;
 
+    @AllowNull(false)
+    @Column(DataTypes.STRING)
+    name: string;
+
     @ForeignKey(() => User)
     @Column(DataTypes.UUID)
     ownerUuid: string;

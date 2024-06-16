@@ -26,6 +26,10 @@ class Channel extends Model {
     type: string;
 
     @AllowNull(false)
+    @Column(DataTypes.STRING)
+    name: string;
+
+    @AllowNull(false)
     @Column(DataTypes.JSON)
     defaultPermissions: object;
 
