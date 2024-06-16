@@ -122,4 +122,33 @@ UserRouter.post("/login", async (req, res) => {
     }
 });
 
+UserRouter.post("/verify", async (req, res) => {
+    try {
+        const { key }: { key?: string } = req.params;
+
+        if (!key) return res.status(400).json({ msg: strings.bad_request });
+
+        const verificationEmail: UserVerificationEmail | null =
+            await UserVerificationEmail.findOne({
+                where: { uuid: key },
+            });
+
+        if (verificationEmail === null)
+            return res
+                .status(404)
+                .json({ msg: strings.invalid_verification_key });
+
+        // Mark user as verified and delete verification email
+        const user = verificationEmail.user;
+        user.email_verified = true;
+        await user.save();
+        await verificationEmail.destroy();
+
+        res.status(200).json({ msg: strings.verified_successfully });
+    } catch (err) {
+        logger.error(err, "verify error");
+        res.status(500).json({ msg: strings.internal_server_error });
+    }
+});
+
 export default UserRouter;

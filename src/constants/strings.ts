@@ -10,6 +10,9 @@ const strings = {
     invalid_login: "Invalid username or password.",
     verify_email: "Please verify your email.",
     login_success: "Login successful.",
+    bad_request: "Bad request.",
+    invalid_verification_key: "Invalid verification key.",
+    verified_successfully: "Email verified successfully.",
 };
 
 export default strings;
