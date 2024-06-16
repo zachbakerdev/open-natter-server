@@ -14,6 +14,7 @@ const strings = {
     invalid_verification_key: "Invalid verification key.",
     verified_successfully: "Email verified successfully.",
     email_not_allowed: "The email address provided cannot be used.",
+    unauthorized: "Unauthorized.",
 };
 
 export default strings;
