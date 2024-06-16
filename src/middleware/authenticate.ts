@@ -17,6 +17,9 @@ const authenticate = async (
     const token = await Token.findOne({ where: { uuid: auth } });
     if (token === null)
         return res.status(401).json({ msg: strings.unauthorized });
+    if (token.user === null)
+        return res.status(401).json({ msg: strings.unauthorized });
+
     (req as AuthenticatedRequest).token = token;
     (req as AuthenticatedRequest).user = token.user;
     return next();

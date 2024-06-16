@@ -15,6 +15,8 @@ const strings = {
     verified_successfully: "Email verified successfully.",
     email_not_allowed: "The email address provided cannot be used.",
     unauthorized: "Unauthorized.",
+    forbidden: "Forbidden.",
+    server_create_success: "Server created successfully.",
 };
 
 export default strings;
