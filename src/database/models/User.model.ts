@@ -55,6 +55,11 @@ class User extends Model {
     @Column(DataTypes.STRING)
     password: string;
 
+    @Default(false)
+    @AllowNull(false)
+    @Column(DataTypes.BOOLEAN)
+    isSystemAdmin: boolean;
+
     @HasMany(() => AuditLogEntry)
     auditLogEntries: AuditLogEntry[];
 
