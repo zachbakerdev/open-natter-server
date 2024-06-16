@@ -17,8 +17,12 @@ export class ChannelRoleAssignment extends Model {
     uuid: string;
 
     @AllowNull(false)
-    @Column(DataTypes.JSON)
-    overridePermissions: object;
+    @Column(DataTypes.INTEGER)
+    permissionsMask: number;
+
+    @AllowNull(false)
+    @Column(DataTypes.INTEGER)
+    permissionsAdditional: number;
 }
 
 export default ChannelRoleAssignment;

@@ -17,8 +17,8 @@ class Role extends Model {
     uuid: string;
 
     @AllowNull(false)
-    @Column(DataTypes.JSON)
-    permissions: object;
+    @Column(DataTypes.INTEGER)
+    defaultPermissions: number;
 }
 
 export default Role;

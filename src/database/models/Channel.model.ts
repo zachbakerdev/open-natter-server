@@ -30,8 +30,8 @@ class Channel extends Model {
     name: string;
 
     @AllowNull(false)
-    @Column(DataTypes.JSON)
-    defaultPermissions: object;
+    @Column(DataTypes.INTEGER)
+    defaultPermissions: number;
 
     @ForeignKey(() => Server)
     @Column(DataTypes.UUID)

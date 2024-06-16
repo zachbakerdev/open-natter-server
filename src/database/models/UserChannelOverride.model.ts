@@ -21,8 +21,12 @@ class UserChannelOverride extends Model {
     uuid: string;
 
     @AllowNull(false)
-    @Column(DataTypes.JSON)
-    overridePermissions: object;
+    @Column(DataTypes.INTEGER)
+    permissionsMask: number;
+
+    @AllowNull(false)
+    @Column(DataTypes.INTEGER)
+    permissionsAdditional: number;
 
     @ForeignKey(() => Channel)
     @Column(DataTypes.UUID)
