@@ -7,6 +7,7 @@ import Channel from "./models/Channel.model";
 import ChannelRoleAssignment from "./models/ChannelRoleAssignment.model";
 import Role from "./models/Role.model";
 import Server from "./models/Server.model";
+import Token from "./models/Token.model";
 import User from "./models/User.model";
 import UserChannelOverride from "./models/UserChannelOverride.model";
 import UserRoleAssignment from "./models/UserRoleAssignment.model";
@@ -95,6 +96,7 @@ sequelize.addModels([
     ChannelRoleAssignment,
     Role,
     Server,
+    Token,
     User,
     UserChannelOverride,
     UserRoleAssignment,
