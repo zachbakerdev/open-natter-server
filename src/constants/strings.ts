@@ -5,8 +5,11 @@ const strings = {
     invalid_username: "Invalid username.",
     invalid_email: "Invalid email.",
     invalid_password: "Invalid password.",
-    register_success: "User registered successfully",
-    error404: "Resource not found",
+    register_success: "User registered successfully.",
+    error404: "Resource not found.",
+    invalid_login: "Invalid username or password.",
+    verify_email: "Please verify your email.",
+    login_success: "Login successful.",
 };
 
 export default strings;

@@ -1,6 +1,7 @@
-import { argon2id, hash } from "argon2";
+import * as argon2 from "argon2";
 import express from "express";
 import strings from "../constants/strings";
+import Token from "../database/models/Token.model";
 import User from "../database/models/User.model";
 import UserVerificationEmail from "../database/models/UserVerificationEmail.model";
 import logger from "../util/logger";
@@ -56,7 +57,9 @@ UserRouter.post("/register", async (req, res) => {
         }
 
         // Generate hash
-        const hashed_password = await hash(password, { type: argon2id });
+        const hashed_password = await argon2.hash(password, {
+            type: argon2.argon2id,
+        });
 
         // Create user
         const user = await User.create({
@@ -76,6 +79,45 @@ UserRouter.post("/register", async (req, res) => {
         res.status(200).json({ msg: strings.register_success });
     } catch (err) {
         logger.error(err, "registration error");
+        res.status(500).json({ msg: strings.internal_server_error });
+    }
+});
+
+UserRouter.post("/login", async (req, res) => {
+    try {
+        const { username, password } = req.body;
+
+        const isEmail: boolean = EMAIL_REGEX.test(username);
+
+        const user: User | null = await (isEmail
+            ? User.findOne({ where: { email: username } })
+            : User.findOne({ where: { username } }));
+
+        if (User === null)
+            return res.status(403).json({ msg: strings.invalid_login });
+
+        const hashed_password: string = user!.password;
+        const isPasswordCorrect: boolean = await argon2.verify(
+            hashed_password,
+            password,
+        );
+        if (!isPasswordCorrect)
+            return res.status(403).json({ msg: strings.invalid_login });
+
+        // Verify email verified
+        if (!user!.email_verified)
+            return res.status(403).json({ msg: strings.verify_email });
+
+        // Create login token
+        const token = await Token.create({ userUuid: user!.uuid });
+
+        // Send token
+        return res.status(200).json({
+            msg: strings.login_success,
+            token: token.uuid,
+        });
+    } catch (err) {
+        logger.error(err, "login error");
         res.status(500).json({ msg: strings.internal_server_error });
     }
 });
