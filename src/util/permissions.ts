@@ -29,6 +29,7 @@ export const hasPermission = (
     type: "and" | "or" = "or",
 ) => {
     if (permissions === Permission.NONE) return true;
+    if (value & Permission.ADMIN) return true;
 
     if (Array.isArray(permissions)) {
         if (type === "or") {

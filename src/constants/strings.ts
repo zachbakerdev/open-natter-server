@@ -6,7 +6,7 @@ const strings = {
     invalid_email: "Invalid email.",
     invalid_password: "Invalid password.",
     register_success: "User registered successfully.",
-    error404: "Resource not found.",
+    not_found: "Resource not found.",
     invalid_login: "Invalid username or password.",
     verify_email: "Please verify your email.",
     login_success: "Login successful.",
@@ -17,6 +17,7 @@ const strings = {
     unauthorized: "Unauthorized.",
     forbidden: "Forbidden.",
     server_create_success: "Server created successfully.",
+    channel_success: "Channel created successfully.",
 };
 
 export default strings;
