@@ -62,7 +62,7 @@ const sequelizeParams: Options =
     NATTER_DB_DIALECT === "sqlite"
         ? {
               dialect: "sqlite",
-              storage: NATTER_DB_HOST,
+              storage: NATTER_DB_DATABASE,
               logging: (msg) => sequelizeLogger.info(msg),
           }
         : {
