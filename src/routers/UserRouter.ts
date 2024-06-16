@@ -1,7 +1,8 @@
 import { argon2id, hash } from "argon2";
 import express from "express";
 import strings from "../constants/strings";
-import { User, UserVerificationEmail } from "../database/sequelize";
+import User from "../database/models/User.model";
+import UserVerificationEmail from "../database/models/UserVerificationEmail.model";
 import logger from "../util/logger";
 import { sendVerificationEmail } from "../util/mailer";
 

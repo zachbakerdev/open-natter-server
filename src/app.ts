@@ -1,4 +1,5 @@
 import express from "express";
+import sequelize, { sequelizeLogger } from "./database/sequelize";
 import UserRouter from "./routers/UserRouter";
 import logger from "./util/logger";
 
@@ -14,6 +15,20 @@ app.use(express.json());
 // Routers
 app.use("/user", UserRouter);
 
-app.listen(port, () => {
-    logger.info(`App listening on port ${port}.`);
-});
+// Sync database and start server
+sequelize
+    .sync({ alter: true })
+    .then(() => {
+        sequelizeLogger.info("Database Sync Completed");
+        logger.info("Database Sync Completed");
+    })
+    .then(() => {
+        app.listen(port, () => {
+            logger.info(`App listening on port ${port}.`);
+        });
+    })
+    .catch((err) => {
+        sequelizeLogger.fatal(err, "Database Sync Failed");
+        logger.fatal(err, "Database Sync Failed");
+        process.exit(1);
+    });
