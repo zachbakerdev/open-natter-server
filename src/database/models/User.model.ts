@@ -60,6 +60,11 @@ class User extends Model {
     @Column(DataTypes.BOOLEAN)
     isSystemAdmin: boolean;
 
+    @Default(false)
+    @AllowNull(false)
+    @Column(DataTypes.BOOLEAN)
+    canCreateServers: boolean;
+
     @HasMany(() => AuditLogEntry)
     auditLogEntries: AuditLogEntry[];
 
