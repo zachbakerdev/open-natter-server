@@ -5,6 +5,7 @@ import logger from "../util/logger";
 import AuditLogEntry from "./models/AuditLogEntry.model";
 import Channel from "./models/Channel.model";
 import ChannelRoleAssignment from "./models/ChannelRoleAssignment.model";
+import Registration from "./models/Registration.model";
 import Role from "./models/Role.model";
 import Server from "./models/Server.model";
 import Token from "./models/Token.model";
@@ -94,6 +95,7 @@ sequelize.addModels([
     AuditLogEntry,
     Channel,
     ChannelRoleAssignment,
+    Registration,
     Role,
     Server,
     Token,
