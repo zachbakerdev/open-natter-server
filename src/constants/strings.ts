@@ -13,6 +13,7 @@ const strings = {
     bad_request: "Bad request.",
     invalid_verification_key: "Invalid verification key.",
     verified_successfully: "Email verified successfully.",
+    email_not_allowed: "The email address provided cannot be used.",
 };
 
 export default strings;

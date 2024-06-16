@@ -1,6 +1,7 @@
 import * as argon2 from "argon2";
 import express from "express";
 import strings from "../constants/strings";
+import Registration from "../database/models/Registration.model";
 import Token from "../database/models/Token.model";
 import User from "../database/models/User.model";
 import UserVerificationEmail from "../database/models/UserVerificationEmail.model";
@@ -9,11 +10,7 @@ import { sendVerificationEmail } from "../util/mailer";
 
 const UserRouter = express.Router();
 
-// Must start with a letter
-// Must only be alphanumeric and underscores
-// Must not end with an underscore
 const USERNAME_REGEX = /^[A-Za-z][A-Za-z0-9_]{1,28}[A-Za-z0-9]$/;
-// Must be a valid email address
 const EMAIL_REGEX =
     /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
 const PASSWORD_LOWERCASE = /^.*[a-z].*$/;
@@ -24,20 +21,33 @@ const PASSWORD_SPECIAL_CHARACTER =
 const PASSWORD_COMPLETE =
     /^[ !"#$%&'()*+,-.\/:;<=>?@[\\\]^_`{|}~A-Za-z0-9]{8,}$/;
 
-// User registration
+const { NATTER_ALLOW_PUBLIC_REGISTER, NATTER_ADMIN_EMAIL } = process.env;
+
+const isUserAllowedToRegister = async (email: string): Promise<boolean> => {
+    if (NATTER_ALLOW_PUBLIC_REGISTER) true;
+    const registration = await Registration.findOne({ where: { email } });
+    return registration !== null;
+};
+
+const isUserAllowedAdmin = async (email: string): Promise<boolean> => {
+    if (email === NATTER_ADMIN_EMAIL) return true;
+    const registration = await Registration.findOne({ where: { email } });
+    if (registration === null) return false;
+    return registration.admin;
+};
+
 UserRouter.post("/register", async (req, res) => {
     try {
         const { username, email, password } = req.body;
 
-        // Validate username requirements
         if (!USERNAME_REGEX.test(username)) {
             return res.status(400).json({ msg: strings.invalid_username });
         }
-        // Validate email requirements
+
         if (!EMAIL_REGEX.test(email)) {
             return res.status(400).json({ msg: strings.invalid_email });
         }
-        // Validate password requirements
+
         let passwordValid = true;
         if (!PASSWORD_COMPLETE.test(password)) passwordValid = false;
         if (!PASSWORD_LOWERCASE.test(password)) passwordValid = false;
@@ -48,7 +58,6 @@ UserRouter.post("/register", async (req, res) => {
             return res.status(400).json({ msg: strings.invalid_password });
         }
 
-        // Validate username and email are free
         if ((await User.findOne({ where: { username } })) !== null) {
             return res.status(409).json({ msg: strings.username_taken });
         }
@@ -56,26 +65,25 @@ UserRouter.post("/register", async (req, res) => {
             return res.status(409).json({ msg: strings.email_used });
         }
 
-        // Generate hash
+        if (!(await isUserAllowedToRegister(email)))
+            return res.status(403).json({ msg: strings.email_not_allowed });
+
+        const isAdmin = await isUserAllowedAdmin(email);
         const hashed_password = await argon2.hash(password, {
             type: argon2.argon2id,
         });
-
-        // Create user
         const user = await User.create({
             username,
             email,
             password: hashed_password,
+            isSystemAdmin: isAdmin,
         });
 
         const verification = await UserVerificationEmail.create({
             userUuid: user.uuid,
         });
-
-        // Send the verification email
         await sendVerificationEmail(user.email, verification.uuid);
 
-        // Return success
         res.status(200).json({ msg: strings.register_success });
     } catch (err) {
         logger.error(err, "registration error");
