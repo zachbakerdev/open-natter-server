@@ -6,7 +6,7 @@ import authenticate, { AuthenticatedRequest } from "../middleware/authenticate";
 import logger from "../util/logger";
 import { Permission, hasPermission } from "../util/permissions";
 
-export const CHANNEL_NAME_REGEX = /^[A-Za-z][A-Za-z0-9 -_]{1,28}[A-Za-z0-9]$/;
+export const CHANNEL_NAME_REGEX = /^[A-Za-z][A-Za-z0-9 \-_]{1,28}[A-Za-z0-9]$/;
 
 const ChannelRouter = Router();
 

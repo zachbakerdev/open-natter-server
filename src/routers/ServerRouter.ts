@@ -4,7 +4,7 @@ import Server from "../database/models/Server.model";
 import authenticate, { AuthenticatedRequest } from "../middleware/authenticate";
 import logger from "../util/logger";
 
-export const SERVER_NAME_REGEX = /^[A-Za-z][A-Za-z0-9 -_]{1,28}[A-Za-z0-9]$/;
+export const SERVER_NAME_REGEX = /^[A-Za-z][A-Za-z0-9 \-_]{1,28}[A-Za-z0-9]$/;
 
 const ServerRouter = Router();
 
