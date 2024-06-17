@@ -19,7 +19,7 @@ if (NATTER_MAIL_ENABLED) {
     logger.warn("No mail configuration specified: no emails will be sent");
 }
 
-const transporter = nodemailer.createTransport(
+const transporter = NATTER_MAIL_ENABLED ? nodemailer.createTransport(
     {
         host: NATTER_MAIL_HOST,
         port: Number(NATTER_MAIL_PORT),
@@ -31,10 +31,10 @@ const transporter = nodemailer.createTransport(
     {
         from: NATTER_MAIL_USER,
     },
-);
+) : null;
 
 transporter
-    .verify()
+    ?.verify()
     .then(() => {
         logger.info("Mailer initialized and verified");
     })
@@ -51,7 +51,7 @@ export const sendVerificationEmail = (
         logger.warn({ email, code }, "Could not send verification email");
         return null;
     }
-    return transporter.sendMail({
+    return transporter!.sendMail({
         to: email,
         subject: "Open Natter Email verification",
         html: `<h1>Your Verification Code is ${code}`,
