@@ -26,8 +26,6 @@ ChannelRouter.post("/", async (req, res) => {
 
         if (server === null)
             return res.status(404).json({ msg: strings.not_found });
-        if (!user.canCreateServers)
-            return res.status(403).json({ msg: strings.forbidden });
 
         const canManageChannels = user.roles.some((role) =>
             hasPermission(Permission.MANAGE_CHANNEL, role.defaultPermissions),
@@ -42,7 +40,7 @@ ChannelRouter.post("/", async (req, res) => {
             defaultPermissions: 0,
         });
 
-        res.status(200).json({ msg: strings.channel_success });
+        res.status(200).json({ msg: strings.channel_success, channel: channel.toJSON() });
     } catch (err) {
         logger.error(err, "channel creation error");
         res.status(500).json({ msg: strings.internal_server_error });
