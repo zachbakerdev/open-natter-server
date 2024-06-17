@@ -22,3 +22,4 @@ yarn-debug.log*
 yarn-error.log*
 *.sqlite
 ecosystem.config.cjs
+/upload
