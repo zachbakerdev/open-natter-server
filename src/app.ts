@@ -1,6 +1,7 @@
 import express from "express";
 import sequelize, { sequelizeLogger } from "./database/sequelize";
 import ChannelRouter from "./routers/ChannelRouter";
+import FileRouter from "./routers/FileRouter";
 import ServerRouter from "./routers/ServerRouter";
 import UserRouter from "./routers/UserRouter";
 import logger from "./util/logger";
@@ -18,6 +19,7 @@ app.use(express.json());
 app.use("/user", UserRouter);
 app.use("/server", ServerRouter);
 app.use("/channel", ChannelRouter);
+app.use("/files", FileRouter);
 
 // Sync database and start server
 sequelize

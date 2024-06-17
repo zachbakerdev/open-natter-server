@@ -18,6 +18,7 @@ const strings = {
     forbidden: "Forbidden.",
     server_create_success: "Server created successfully.",
     channel_success: "Channel created successfully.",
+    file_success: "File uploaded successfully.",
 };
 
 export default strings;
