@@ -17,7 +17,7 @@ app.use(express.json());
 // Routers
 app.use("/user", UserRouter);
 app.use("/server", ServerRouter);
-app.use("/server", ChannelRouter);
+app.use("/channel", ChannelRouter);
 
 // Sync database and start server
 sequelize
