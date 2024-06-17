@@ -10,7 +10,7 @@ const {
     NATTER_MAIL_PASS,
 } = process.env;
 
-if (NATTER_MAIL_ENABLED) {
+if (NATTER_MAIL_ENABLED === "true") {
     if (!NATTER_MAIL_HOST || !NATTER_MAIL_USER || !NATTER_MAIL_PASS) {
         logger.fatal("Invalid mail environemnt configuration");
         process.exit(1);
