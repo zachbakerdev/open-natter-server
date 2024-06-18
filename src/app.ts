@@ -21,6 +21,9 @@ app.use("/server", ServerRouter);
 app.use("/channel", ChannelRouter);
 app.use("/files", FileRouter);
 
+// Serve uploads
+app.use("/upload", express.static(__dirname + "/upload"));
+
 // Sync database and start server
 sequelize
     .sync({ alter: true })
