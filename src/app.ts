@@ -22,7 +22,7 @@ app.use("/channel", ChannelRouter);
 app.use("/files", FileRouter);
 
 // Serve uploads
-app.use("/files", express.static("/upload"));
+app.get("/files/:filename", express.static("/upload"));
 
 // Sync database and start server
 sequelize
