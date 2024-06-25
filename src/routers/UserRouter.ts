@@ -1,3 +1,4 @@
+import { generateSecret, validateToken } from "@sunknudsen/totp";
 import * as argon2 from "argon2";
 import express from "express";
 import strings from "../constants/strings";
@@ -5,6 +6,7 @@ import Registration from "../database/models/Registration.model";
 import Token from "../database/models/Token.model";
 import User from "../database/models/User.model";
 import UserVerificationEmail from "../database/models/UserVerificationEmail.model";
+import authenticate, { AuthenticatedRequest } from "../middleware/authenticate";
 import logger from "../util/logger";
 import { sendVerificationEmail } from "../util/mailer";
 
@@ -130,7 +132,7 @@ UserRouter.post("/login", async (req, res) => {
     }
 });
 
-UserRouter.post("/verify", async (req, res) => {
+UserRouter.post("/register/verify", async (req, res) => {
     try {
         const { key }: { key?: string } = req.params;
 
@@ -156,6 +158,81 @@ UserRouter.post("/verify", async (req, res) => {
     } catch (err) {
         logger.error(err, "verify error");
         res.status(500).json({ msg: strings.internal_server_error });
+    }
+});
+
+UserRouter.post("/enable_2fa", authenticate, async (req, res) => {
+    try {
+        const user = (req as AuthenticatedRequest).user;
+
+        if (user.two_factor_authentication_enabled)
+            return res.status(409).json({msg: strings.two_factor_already_enabled});
+
+        user.two_factor_authentication_secret = generateSecret();
+        await user.save();
+
+        res.status(202).json({msg: strings.verify_enable_2fa, secret: user.two_factor_authentication_secret});
+    } catch (err) {
+        logger.error(err, "enable 2fa error");
+        res.status(500).json({msg: strings.internal_server_error});
+    }
+});
+
+UserRouter.post("/enable_2fa/verify", authenticate, async (req, res) => {
+    try {
+        const user = (req as AuthenticatedRequest).user;
+
+        if (user.two_factor_authentication_enabled)
+            return res.status(409).json({msg: strings.two_factor_already_enabled});
+
+        if (!user.two_factor_authentication_secret)
+            return res.status(400).json({msg: strings.generate_2fa_first});
+
+        const {code} = req.body;
+
+        if (!code)
+            return res.status(400).json({msg: strings.missing_2fa_code});
+
+        const isCodeValid = validateToken(user.two_factor_authentication_secret, code);
+
+        if (!isCodeValid)
+            return res.status(403).json({msg: strings.invalid_2fa});
+
+        user.two_factor_authentication_enabled = true;
+        await user.save();
+
+        res.status(200).json({msg: strings.two_factor_enabled});
+    } catch (err) {
+        logger.error(err, "verify enable 2fa error");
+        res.status(500).json({msg: strings.internal_server_error});
+    }
+});
+
+UserRouter.post("/disable_2fa", authenticate, async (req, res) => {
+    try {
+        const user = (req as AuthenticatedRequest).user;
+
+        if (!user.two_factor_authentication_enabled || !user.two_factor_authentication_secret)
+            return res.status(409).json({msg: strings.two_factor_already_disabled})
+
+        const {code} = req.body;
+
+        if (!code)
+            return res.status(400).json({msg: strings.missing_2fa_code});
+
+        const isCodeValid = validateToken(user.two_factor_authentication_secret, code);
+
+        if (!isCodeValid)
+            return res.status(403).json({msg: strings.invalid_2fa});
+
+        user.two_factor_authentication_enabled = false;
+        user.two_factor_authentication_secret = null;
+        await user.save();
+
+        return res.status(200).json({msg: strings.two_factor_disabled})
+    } catch (err) {
+        logger.error(err, "disable 2fa error");
+        res.status(500).json({msg: strings.internal_server_error});
     }
 });
 

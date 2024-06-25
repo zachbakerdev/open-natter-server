@@ -49,7 +49,7 @@ class User extends Model {
     two_factor_authentication_enabled: boolean;
 
     @Column(DataTypes.TEXT)
-    two_factor_authentication_secret: string;
+    two_factor_authentication_secret: string | null;
 
     @AllowNull(false)
     @Column(DataTypes.STRING)

@@ -19,6 +19,14 @@ const strings = {
     server_create_success: "Server created successfully.",
     channel_success: "Channel created successfully.",
     file_success: "File uploaded successfully.",
+    two_factor_already_enabled: "2FA has already been enabled on this account.",
+    two_factor_already_disabled: "2FA is not enabled on this account.",
+    verify_enable_2fa: "Please save 2FA and verify.",
+    missing_2fa_code: "Missing 2FA code.",
+    invalid_2fa: "Invalid 2FA code.",
+    two_factor_enabled: "2FA enabled successfully.",
+    two_factor_disabled: "2FA disabled successfully.",
+    generate_2fa_first: "You must request to generate a secret first.",
 };
 
 export default strings;
