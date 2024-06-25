@@ -27,6 +27,7 @@ const { NATTER_ALLOW_PUBLIC_REGISTER, NATTER_ADMIN_EMAIL } = process.env;
 
 const isUserAllowedToRegister = async (email: string): Promise<boolean> => {
     if (NATTER_ALLOW_PUBLIC_REGISTER) return true;
+    if (NATTER_ADMIN_EMAIL === email) return true;
     const registration = await Registration.findOne({ where: { email } });
     return registration !== null;
 };
