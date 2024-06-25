@@ -11,6 +11,7 @@
     "lint:fix": "eslint . --fix"
   },
   "dependencies": {
+    "@sunknudsen/totp": "^1.1.0",
     "argon2": "^0.40.3",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
