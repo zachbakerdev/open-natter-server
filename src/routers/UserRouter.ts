@@ -12,21 +12,21 @@ import { sendVerificationEmail } from "../util/mailer";
 
 const UserRouter = express.Router();
 
-const USERNAME_REGEX = /^[A-Za-z][A-Za-z0-9_]{1,28}[A-Za-z0-9]$/;
+const USERNAME_REGEX = /^[A-Za-z]\w{1,28}[A-Za-z0-9]$/;
 const EMAIL_REGEX =
-    /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
+    /^[-!#$%&'*+/0-9=?A-Z^_a-z{|}~](\.?[-!#$%&'*+/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*\.?[a-zA-Z0-9])*\.[a-zA-Z](-?[a-zA-Z0-9])+$/;
 const PASSWORD_LOWERCASE = /^.*[a-z].*$/;
 const PASSWORD_UPPERCASE = /^.*[A-Z].*$/;
-const PASSWORD_NUMBER = /^.*[0-9].*$/;
+const PASSWORD_NUMBER = /^.*\d.*$/;
 const PASSWORD_SPECIAL_CHARACTER =
-    /^.*[ !"#$%&'()*+,-.\/:;<=>?@[\\\]^_`{|}~].*$/;
+    /^.*[ !"#$%&'()*+,-./:;<=>?@[\\\]^_`{|}~].*$/;
 const PASSWORD_COMPLETE =
-    /^[ !"#$%&'()*+,-.\/:;<=>?@[\\\]^_`{|}~A-Za-z0-9]{8,}$/;
+    /^[ !"#$%&'()*+,-./:;<=>?@[\\\]^_`{|}~A-Za-z0-9]{8,}$/;
 
 const { NATTER_ALLOW_PUBLIC_REGISTER, NATTER_ADMIN_EMAIL } = process.env;
 
 const isUserAllowedToRegister = async (email: string): Promise<boolean> => {
-    if (NATTER_ALLOW_PUBLIC_REGISTER) true;
+    if (NATTER_ALLOW_PUBLIC_REGISTER) return true;
     const registration = await Registration.findOne({ where: { email } });
     return registration !== null;
 };
