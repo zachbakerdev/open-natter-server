@@ -14,6 +14,10 @@ const authenticate = async (
     next: NextFunction,
 ) => {
     const auth = req.header("Authorization");
+
+    if (auth === undefined)
+        return next();
+
     const token = await Token.findOne({ where: { uuid: auth } });
     if (token === null)
         return res.status(401).json({ msg: strings.unauthorized });

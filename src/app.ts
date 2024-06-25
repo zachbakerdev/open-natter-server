@@ -1,4 +1,5 @@
 import express from "express";
+import proxy from "express-http-proxy";
 import sequelize, { sequelizeLogger } from "./database/sequelize";
 import ChannelRouter from "./routers/ChannelRouter";
 import FileRouter from "./routers/FileRouter";
@@ -21,8 +22,11 @@ app.use("/server", ServerRouter);
 app.use("/channel", ChannelRouter);
 app.use("/files", FileRouter);
 
-// Serve uploads
-app.get("/files/:filename", express.static("/upload"));
+app.use("/files", express.static("upload", {fallthrough: false, index: false}));
+
+app.use("*", proxy("http://127.0.0.1:3000/", {
+    proxyReqPathResolver: req => req.originalUrl
+}));
 
 // Sync database and start server
 sequelize
