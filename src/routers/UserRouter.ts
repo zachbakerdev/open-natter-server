@@ -7,6 +7,7 @@ import Token from "../database/models/Token.model";
 import User from "../database/models/User.model";
 import UserVerificationEmail from "../database/models/UserVerificationEmail.model";
 import authenticate, { AuthenticatedRequest } from "../middleware/authenticate";
+import generateEmailCode from "../util/generateEmailCode";
 import logger from "../util/logger";
 import { sendVerificationEmail } from "../util/mailer";
 
@@ -84,11 +85,12 @@ UserRouter.post("/register", async (req, res) => {
         });
 
         const verification = await UserVerificationEmail.create({
+            code: generateEmailCode(),
             userUuid: user.uuid,
         });
-        await sendVerificationEmail(user.email, verification.uuid);
+        await sendVerificationEmail(user.email, verification.code);
 
-        res.status(200).json({ msg: strings.register_success });
+        res.status(200).json({ msg: strings.register_success, verification: verification.uuid });
     } catch (err) {
         logger.error(err, "registration error");
         res.status(500).json({ msg: strings.internal_server_error });
