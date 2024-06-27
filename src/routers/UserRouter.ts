@@ -114,7 +114,7 @@ UserRouter.post("/login", async (req, res) => {
         if (user === null)
             return res.status(403).json({ msg: strings.invalid_login });
 
-        const hashed_password: string = user!.password;
+        const hashed_password: string = user.password;
         const isPasswordCorrect: boolean = await argon2.verify(
             hashed_password,
             password,
@@ -123,11 +123,11 @@ UserRouter.post("/login", async (req, res) => {
             return res.status(403).json({ msg: strings.invalid_login });
 
         // Verify email verified
-        if (!user!.email_verified)
+        if (!user.email_verified)
             return res.status(403).json({ msg: strings.verify_email, verification: user?.verificationEmail.uuid });
 
         // Create login token
-        const token = await Token.create({ userUuid: user!.uuid });
+        const token = await Token.create({ userUuid: user.uuid });
 
         // Send token
         return res.status(200).json({
