@@ -90,7 +90,10 @@ UserRouter.post("/register", async (req, res) => {
         });
         await sendVerificationEmail(user.email, verification.code);
 
-        res.status(200).json({ msg: strings.register_success, verification: verification.uuid });
+        res.status(200).json({
+            msg: strings.register_success,
+            verification: verification.uuid,
+        });
     } catch (err) {
         logger.error(err, "registration error");
         res.status(500).json({ msg: strings.internal_server_error });
@@ -103,13 +106,19 @@ UserRouter.post("/login", async (req, res) => {
         const { username, password } = req.body;
 
         if (!username || !password)
-            return res.status(400).json({msg: strings.bad_request});
+            return res.status(400).json({ msg: strings.bad_request });
 
         const isEmail: boolean = EMAIL_REGEX.test(username);
 
         const user: User | null = await (isEmail
-            ? User.findOne({ where: { email: username }, include: [UserVerificationEmail] })
-            : User.findOne({ where: { username }, include: [UserVerificationEmail] }));
+            ? User.findOne({
+                  where: { email: username },
+                  include: [UserVerificationEmail],
+              })
+            : User.findOne({
+                  where: { username },
+                  include: [UserVerificationEmail],
+              }));
 
         if (user === null)
             return res.status(403).json({ msg: strings.invalid_login });
@@ -128,11 +137,14 @@ UserRouter.post("/login", async (req, res) => {
             if (verification === null) {
                 verification = await UserVerificationEmail.create({
                     code: generateEmailCode(),
-                    userUuid: user.uuid
+                    userUuid: user.uuid,
                 });
                 await sendVerificationEmail(user.email, verification.code);
             }
-            return res.status(403).json({ msg: strings.verify_email, verification: verification.uuid });
+            return res.status(403).json({
+                msg: strings.verify_email,
+                verification: verification.uuid,
+            });
         }
 
         // Create login token
@@ -154,12 +166,13 @@ UserRouter.post("/register/verify", async (req, res) => {
     try {
         const { verification, code } = req.body;
 
-        if (!verification) return res.status(400).json({ msg: strings.bad_request });
+        if (!verification)
+            return res.status(400).json({ msg: strings.bad_request });
 
         const verificationEmail: UserVerificationEmail | null =
             await UserVerificationEmail.findOne({
                 where: { uuid: verification },
-                include: [User]
+                include: [User],
             });
 
         if (verificationEmail === null)
@@ -191,23 +204,31 @@ UserRouter.post("/register/resend_email", async (req, res) => {
     try {
         const { verification } = req.body;
 
-        if (!verification) return res.status(400).json({ msg: strings.bad_request });
+        if (!verification)
+            return res.status(400).json({ msg: strings.bad_request });
 
-        const verificationEmail: UserVerificationEmail | null = await UserVerificationEmail.findOne({ where: { uuid: verification }, include: [User] });
+        const verificationEmail: UserVerificationEmail | null =
+            await UserVerificationEmail.findOne({
+                where: { uuid: verification },
+                include: [User],
+            });
 
         if (verificationEmail === null)
-            return res.status(404).json({msg: strings.not_found});
+            return res.status(404).json({ msg: strings.not_found });
 
         verificationEmail.code = generateEmailCode();
 
-        await sendVerificationEmail(verificationEmail.user.email, verificationEmail.code);
+        await sendVerificationEmail(
+            verificationEmail.user.email,
+            verificationEmail.code,
+        );
 
         await verificationEmail.save();
 
-        return res.status(200).json({msg: strings.email_resent});
+        return res.status(200).json({ msg: strings.email_resent });
     } catch (err) {
         logger.error(err, "resend email error");
-        res.status(500).json({msg: strings.internal_server_error});
+        res.status(500).json({ msg: strings.internal_server_error });
     }
 });
 
@@ -217,15 +238,20 @@ UserRouter.post("/enable_2fa", authenticate, async (req, res) => {
         const user = (req as AuthenticatedRequest).user;
 
         if (user.two_factor_authentication_enabled)
-            return res.status(409).json({msg: strings.two_factor_already_enabled});
+            return res
+                .status(409)
+                .json({ msg: strings.two_factor_already_enabled });
 
         user.two_factor_authentication_secret = generateSecret();
         await user.save();
 
-        res.status(202).json({msg: strings.verify_enable_2fa, secret: user.two_factor_authentication_secret});
+        res.status(202).json({
+            msg: strings.verify_enable_2fa,
+            secret: user.two_factor_authentication_secret,
+        });
     } catch (err) {
         logger.error(err, "enable 2fa error");
-        res.status(500).json({msg: strings.internal_server_error});
+        res.status(500).json({ msg: strings.internal_server_error });
     }
 });
 
@@ -235,28 +261,33 @@ UserRouter.post("/enable_2fa/verify", authenticate, async (req, res) => {
         const user = (req as AuthenticatedRequest).user;
 
         if (user.two_factor_authentication_enabled)
-            return res.status(409).json({msg: strings.two_factor_already_enabled});
+            return res
+                .status(409)
+                .json({ msg: strings.two_factor_already_enabled });
 
         if (!user.two_factor_authentication_secret)
-            return res.status(400).json({msg: strings.generate_2fa_first});
+            return res.status(400).json({ msg: strings.generate_2fa_first });
 
-        const {code} = req.body;
+        const { code } = req.body;
 
         if (!code)
-            return res.status(400).json({msg: strings.missing_2fa_code});
+            return res.status(400).json({ msg: strings.missing_2fa_code });
 
-        const isCodeValid = validateToken(user.two_factor_authentication_secret, code);
+        const isCodeValid = validateToken(
+            user.two_factor_authentication_secret,
+            code,
+        );
 
         if (!isCodeValid)
-            return res.status(403).json({msg: strings.invalid_2fa});
+            return res.status(403).json({ msg: strings.invalid_2fa });
 
         user.two_factor_authentication_enabled = true;
         await user.save();
 
-        res.status(200).json({msg: strings.two_factor_enabled});
+        res.status(200).json({ msg: strings.two_factor_enabled });
     } catch (err) {
         logger.error(err, "verify enable 2fa error");
-        res.status(500).json({msg: strings.internal_server_error});
+        res.status(500).json({ msg: strings.internal_server_error });
     }
 });
 
@@ -265,27 +296,35 @@ UserRouter.post("/disable_2fa", authenticate, async (req, res) => {
     try {
         const user = (req as AuthenticatedRequest).user;
 
-        if (!user.two_factor_authentication_enabled || !user.two_factor_authentication_secret)
-            return res.status(409).json({msg: strings.two_factor_already_disabled})
+        if (
+            !user.two_factor_authentication_enabled ||
+            !user.two_factor_authentication_secret
+        )
+            return res
+                .status(409)
+                .json({ msg: strings.two_factor_already_disabled });
 
-        const {code} = req.body;
+        const { code } = req.body;
 
         if (!code)
-            return res.status(400).json({msg: strings.missing_2fa_code});
+            return res.status(400).json({ msg: strings.missing_2fa_code });
 
-        const isCodeValid = validateToken(user.two_factor_authentication_secret, code);
+        const isCodeValid = validateToken(
+            user.two_factor_authentication_secret,
+            code,
+        );
 
         if (!isCodeValid)
-            return res.status(403).json({msg: strings.invalid_2fa});
+            return res.status(403).json({ msg: strings.invalid_2fa });
 
         user.two_factor_authentication_enabled = false;
         user.two_factor_authentication_secret = null;
         await user.save();
 
-        return res.status(200).json({msg: strings.two_factor_disabled})
+        return res.status(200).json({ msg: strings.two_factor_disabled });
     } catch (err) {
         logger.error(err, "disable 2fa error");
-        res.status(500).json({msg: strings.internal_server_error});
+        res.status(500).json({ msg: strings.internal_server_error });
     }
 });
 
