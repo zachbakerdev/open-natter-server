@@ -124,7 +124,7 @@ UserRouter.post("/login", async (req, res) => {
 
         // Verify email verified
         if (!user.email_verified) {
-            let verification = user.verificationEmail;
+            let verification = user.verificationEmails[0];
             if (verification === null) {
                 verification = await UserVerificationEmail.create({
                     code: generateEmailCode(),

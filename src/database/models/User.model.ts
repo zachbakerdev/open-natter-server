@@ -77,8 +77,8 @@ class User extends Model {
     @BelongsToMany(() => Role, () => UserRoleAssignment)
     roles: Role[];
 
-    @HasOne(() => UserVerificationEmail)
-    verificationEmail: UserVerificationEmail | null;
+    @HasMany(() => UserVerificationEmail)
+    verificationEmails: UserVerificationEmail[];
 }
 
 export default User;
