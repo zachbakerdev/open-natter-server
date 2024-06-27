@@ -1,5 +1,6 @@
 import express from "express";
 import proxy from "express-http-proxy";
+import strings from "./constants/strings";
 import sequelize, { sequelizeLogger } from "./database/sequelize";
 import ChannelRouter from "./routers/ChannelRouter";
 import FileRouter from "./routers/FileRouter";
@@ -9,6 +10,7 @@ import logger from "./util/logger";
 
 // Define port
 const port = 8080;
+const prefix = "/api";
 
 // Create app
 const app = express();
@@ -17,12 +19,16 @@ const app = express();
 app.use(express.json());
 
 // Routers
-app.use("/user", UserRouter);
-app.use("/server", ServerRouter);
-app.use("/channel", ChannelRouter);
-app.use("/files", FileRouter);
+app.use(prefix + "/user", UserRouter);
+app.use(prefix + "/server", ServerRouter);
+app.use(prefix + "/channel", ChannelRouter);
+app.use(prefix + "/files", FileRouter);
 
-app.use("/files", express.static("upload", {fallthrough: false, index: false}));
+app.use(prefix + "/files", express.static("upload", {fallthrough: false, index: false}));
+
+app.use(prefix + "/*", (req, res) => {
+    res.status(404).json({msg: strings.not_found})
+});
 
 app.use("*", proxy("http://127.0.0.1:3000/", {
     proxyReqPathResolver: req => req.originalUrl
