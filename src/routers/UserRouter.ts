@@ -111,7 +111,7 @@ UserRouter.post("/login", async (req, res) => {
             ? User.findOne({ where: { email: username }, include: [UserVerificationEmail] })
             : User.findOne({ where: { username }, include: [UserVerificationEmail] }));
 
-        if (User === null)
+        if (user === null)
             return res.status(403).json({ msg: strings.invalid_login });
 
         const hashed_password: string = user!.password;
