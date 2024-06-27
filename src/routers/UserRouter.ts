@@ -140,7 +140,7 @@ UserRouter.post("/login", async (req, res) => {
 UserRouter.post("/register/verify", async (req, res) => {
     // 200 400 403 404 500
     try {
-        const { verification, code }: { verification?: string, code?: string } = req.params;
+        const { verification, code } = req.body;
 
         if (!verification) return res.status(400).json({ msg: strings.bad_request });
 
