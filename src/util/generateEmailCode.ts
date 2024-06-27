@@ -1,5 +1,6 @@
 const padEmailCode = (num: number, size: number): string => {
-    return ("000000" + num).substring(-size);
+    const combined = "00000" + num.toString();
+    return combined.substring(combined.length - size);
 }
 
 const generateEmailCode = (): string => {
