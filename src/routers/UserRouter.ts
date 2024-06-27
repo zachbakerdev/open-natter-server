@@ -147,6 +147,7 @@ UserRouter.post("/register/verify", async (req, res) => {
         const verificationEmail: UserVerificationEmail | null =
             await UserVerificationEmail.findOne({
                 where: { uuid: verification },
+                include: [User]
             });
 
         if (verificationEmail === null)
