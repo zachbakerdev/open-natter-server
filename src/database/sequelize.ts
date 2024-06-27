@@ -61,6 +61,10 @@ const getDefaultDatabasePort = (dialect: Dialect): number => {
     }
 };
 
+if (NATTER_DB_DIALECT === "sqlite" && !NATTER_DB_DATABASE) {
+    logger.warn("No database file specified. Creating temporary database in memory.");
+}
+
 // Generate parameters
 const sequelizeParams: Options =
     NATTER_DB_DIALECT === "sqlite"
