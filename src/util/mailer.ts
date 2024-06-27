@@ -19,7 +19,9 @@ if (NATTER_MAIL_ENABLED === "true") {
     logger.warn("No mail configuration specified: no emails will be sent");
 }
 
-const transporter = NATTER_MAIL_ENABLED === "true" ? nodemailer.createTransport(
+const transporter =
+    NATTER_MAIL_ENABLED === "true"
+        ? nodemailer.createTransport(
     {
         host: NATTER_MAIL_HOST,
         port: Number(NATTER_MAIL_PORT),
@@ -31,7 +33,8 @@ const transporter = NATTER_MAIL_ENABLED === "true" ? nodemailer.createTransport(
     {
         from: NATTER_MAIL_USER,
     },
-) : null;
+          )
+        : null;
 
 transporter
     ?.verify()
