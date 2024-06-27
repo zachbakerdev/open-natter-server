@@ -123,8 +123,17 @@ UserRouter.post("/login", async (req, res) => {
             return res.status(403).json({ msg: strings.invalid_login });
 
         // Verify email verified
-        if (!user.email_verified)
-            return res.status(403).json({ msg: strings.verify_email, verification: user?.verificationEmail.uuid });
+        if (!user.email_verified) {
+            let verification = user.verificationEmail;
+            if (verification === null) {
+                verification = await UserVerificationEmail.create({
+                    code: generateEmailCode(),
+                    userUuid: user.uuid
+                });
+                await sendVerificationEmail(user.email, verification.code);
+            }
+            return res.status(403).json({ msg: strings.verify_email, verification: verification.uuid });
+        }
 
         // Create login token
         const token = await Token.create({ userUuid: user.uuid });
