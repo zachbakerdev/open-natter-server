@@ -5,14 +5,14 @@ import {
     Column,
     Default,
     HasMany,
-    HasOne,
     IsEmail,
     Model,
     PrimaryKey,
     Table,
-    Unique,
+    Unique
 } from "sequelize-typescript";
 import AuditLogEntry from "./AuditLogEntry.model";
+import ForgotPassword from "./ForgotPassword.model";
 import Role from "./Role.model";
 import Server from "./Server.model";
 import UserChannelOverride from "./UserChannelOverride.model";
@@ -79,6 +79,9 @@ class User extends Model {
 
     @HasMany(() => UserVerificationEmail)
     verificationEmails: UserVerificationEmail[];
+
+    @HasMany(() => ForgotPassword)
+    forgotPasswords: ForgotPassword[];
 }
 
 export default User;
