@@ -78,7 +78,7 @@ class User extends Model {
     roles: Role[];
 
     @HasOne(() => UserVerificationEmail)
-    verificationEmail: UserVerificationEmail;
+    verificationEmail: UserVerificationEmail | null;
 }
 
 export default User;
