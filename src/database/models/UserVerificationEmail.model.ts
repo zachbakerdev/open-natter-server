@@ -19,6 +19,10 @@ class UserVerificationEmail extends Model {
     @Column(DataTypes.UUID)
     uuid: string;
 
+    @AllowNull(false)
+    @Column(DataTypes.STRING)
+    code: string;
+
     @ForeignKey(() => User)
     @Column(DataTypes.UUID)
     userUuid: string;
