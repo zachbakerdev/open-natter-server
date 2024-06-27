@@ -102,11 +102,14 @@ UserRouter.post("/login", async (req, res) => {
     try {
         const { username, password } = req.body;
 
+        if (!username || !password)
+            return res.status(400).json({msg: strings.bad_request});
+
         const isEmail: boolean = EMAIL_REGEX.test(username);
 
         const user: User | null = await (isEmail
-            ? User.findOne({ where: { email: username } })
-            : User.findOne({ where: { username } }));
+            ? User.findOne({ where: { email: username }, include: [UserVerificationEmail] })
+            : User.findOne({ where: { username }, include: [UserVerificationEmail] }));
 
         if (User === null)
             return res.status(403).json({ msg: strings.invalid_login });
@@ -121,7 +124,7 @@ UserRouter.post("/login", async (req, res) => {
 
         // Verify email verified
         if (!user!.email_verified)
-            return res.status(403).json({ msg: strings.verify_email });
+            return res.status(403).json({ msg: strings.verify_email, verification: user?.verificationEmail.uuid });
 
         // Create login token
         const token = await Token.create({ userUuid: user!.uuid });
