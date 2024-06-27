@@ -138,21 +138,27 @@ UserRouter.post("/login", async (req, res) => {
 });
 
 UserRouter.post("/register/verify", async (req, res) => {
-    // 200 400 404 500
+    // 200 400 403 404 500
     try {
-        const { key }: { key?: string } = req.params;
+        const { verification, code }: { verification?: string, code?: string } = req.params;
 
-        if (!key) return res.status(400).json({ msg: strings.bad_request });
+        if (!verification) return res.status(400).json({ msg: strings.bad_request });
 
         const verificationEmail: UserVerificationEmail | null =
             await UserVerificationEmail.findOne({
-                where: { uuid: key },
+                where: { uuid: verification },
             });
 
         if (verificationEmail === null)
             return res
                 .status(404)
                 .json({ msg: strings.invalid_verification_key });
+
+        // Check codes match
+        if (verificationEmail.code !== code)
+            return res
+                .status(403)
+                .json({ msg: strings.invalid_verification_code });
 
         // Mark user as verified and delete verification email
         const user = verificationEmail.user;

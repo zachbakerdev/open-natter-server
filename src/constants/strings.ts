@@ -12,6 +12,7 @@ const strings = {
     login_success: "Login successful.",
     bad_request: "Bad request.",
     invalid_verification_key: "Invalid verification key.",
+    invalid_verification_code: "Invalid verification code.",
     verified_successfully: "Email verified successfully.",
     email_not_allowed: "The email address provided cannot be used.",
     unauthorized: "Unauthorized.",
