@@ -29,6 +29,8 @@ const strings = {
     two_factor_disabled: "2FA disabled successfully.",
     generate_2fa_first: "You must request to generate a secret first.",
     email_resent: "Email resent.",
+    recovery_sent: "Recovery code sent.",
+    password_reset_success: "Password reset successfully.",
 };
 
 export default strings;

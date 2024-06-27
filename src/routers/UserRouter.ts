@@ -2,6 +2,7 @@ import { generateSecret, validateToken } from "@sunknudsen/totp";
 import * as argon2 from "argon2";
 import express from "express";
 import strings from "../constants/strings";
+import ForgotPassword from "../database/models/ForgotPassword.model";
 import Registration from "../database/models/Registration.model";
 import Token from "../database/models/Token.model";
 import User from "../database/models/User.model";
@@ -9,7 +10,7 @@ import UserVerificationEmail from "../database/models/UserVerificationEmail.mode
 import authenticate, { AuthenticatedRequest } from "../middleware/authenticate";
 import generateEmailCode from "../util/generateEmailCode";
 import logger from "../util/logger";
-import { sendVerificationEmail } from "../util/mailer";
+import { sendForgotPasswordEmail, sendVerificationEmail } from "../util/mailer";
 
 const UserRouter = express.Router();
 
@@ -324,6 +325,62 @@ UserRouter.post("/disable_2fa", authenticate, async (req, res) => {
         return res.status(200).json({ msg: strings.two_factor_disabled });
     } catch (err) {
         logger.error(err, "disable 2fa error");
+        res.status(500).json({ msg: strings.internal_server_error });
+    }
+});
+
+UserRouter.post("/login/forgot_password", async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) return res.status(404).json({ msg: strings.not_found });
+
+        const user = await User.findOne({ where: { email } });
+
+        if (user === null)
+            return res.status(404).json({ msg: strings.not_found });
+
+        const forgotPassword = await ForgotPassword.create({
+            code: generateEmailCode(),
+            userUuid: user.uuid,
+        });
+
+        await sendForgotPasswordEmail(user.email, forgotPassword.code);
+
+        return res.status(200).json({ msg: strings.recovery_sent });
+    } catch (err) {
+        logger.error(err, "forgot password error");
+        res.status(500).json({ msg: strings.internal_server_error });
+    }
+});
+
+UserRouter.post("/login/reset_pasword", async (req, res) => {
+    try {
+        const { key, code, password } = req.body;
+
+        const forgotPassword = await ForgotPassword.findOne({
+            where: { uuid: key },
+            include: [User],
+        });
+
+        if (forgotPassword === null)
+            return res.status(404).json({ msg: strings.not_found });
+
+        if (forgotPassword.code !== code)
+            return res
+                .status(403)
+                .json({ msg: strings.invalid_verification_code });
+
+        const hashed_password = await argon2.hash(password, {
+            type: argon2.argon2id,
+        });
+
+        forgotPassword.user.password = hashed_password;
+        await forgotPassword.user.save();
+
+        return res.status(200).json({ msg: strings.password_reset_success });
+    } catch (err) {
+        logger.error(err, "reset password error");
         res.status(500).json({ msg: strings.internal_server_error });
     }
 });
