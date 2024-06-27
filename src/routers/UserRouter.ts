@@ -40,6 +40,7 @@ const isUserAllowedAdmin = async (email: string): Promise<boolean> => {
 };
 
 UserRouter.post("/register", async (req, res) => {
+    // 200 400 403 409 500
     try {
         const { username, email, password } = req.body;
 
@@ -95,6 +96,7 @@ UserRouter.post("/register", async (req, res) => {
 });
 
 UserRouter.post("/login", async (req, res) => {
+    // 200 403 500
     try {
         const { username, password } = req.body;
 
@@ -134,6 +136,7 @@ UserRouter.post("/login", async (req, res) => {
 });
 
 UserRouter.post("/register/verify", async (req, res) => {
+    // 200 400 404 500
     try {
         const { key }: { key?: string } = req.params;
 
@@ -163,6 +166,7 @@ UserRouter.post("/register/verify", async (req, res) => {
 });
 
 UserRouter.post("/enable_2fa", authenticate, async (req, res) => {
+    // 202 409 500
     try {
         const user = (req as AuthenticatedRequest).user;
 
@@ -180,6 +184,7 @@ UserRouter.post("/enable_2fa", authenticate, async (req, res) => {
 });
 
 UserRouter.post("/enable_2fa/verify", authenticate, async (req, res) => {
+    // 200 400 403 409 500
     try {
         const user = (req as AuthenticatedRequest).user;
 
@@ -210,6 +215,7 @@ UserRouter.post("/enable_2fa/verify", authenticate, async (req, res) => {
 });
 
 UserRouter.post("/disable_2fa", authenticate, async (req, res) => {
+    // 200 403 409 500
     try {
         const user = (req as AuthenticatedRequest).user;
 
