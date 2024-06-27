@@ -22,17 +22,17 @@ if (NATTER_MAIL_ENABLED === "true") {
 const transporter =
     NATTER_MAIL_ENABLED === "true"
         ? nodemailer.createTransport(
-    {
-        host: NATTER_MAIL_HOST,
-        port: Number(NATTER_MAIL_PORT),
-        auth: {
-            user: NATTER_MAIL_USER,
-            pass: NATTER_MAIL_PASS,
-        },
-    },
-    {
-        from: NATTER_MAIL_USER,
-    },
+              {
+                  host: NATTER_MAIL_HOST,
+                  port: Number(NATTER_MAIL_PORT),
+                  auth: {
+                      user: NATTER_MAIL_USER,
+                      pass: NATTER_MAIL_PASS,
+                  },
+              },
+              {
+                  from: NATTER_MAIL_USER,
+              },
           )
         : null;
 
@@ -58,6 +58,21 @@ export const sendVerificationEmail = (
         to: email,
         subject: "Open Natter Email verification",
         html: `<h1>Your Verification Code is ${code}`,
+    });
+};
+
+export const sendForgotPasswordEmail = (
+    email: string,
+    code: string,
+): Promise<SMTPTransport.SentMessageInfo> | null => {
+    if (NATTER_MAIL_ENABLED !== "true") {
+        logger.warn({ email, code }, "Could not send forgot password email");
+        return null;
+    }
+    return transporter!.sendMail({
+        to: email,
+        subject: "Open Natter Password Reset",
+        html: `<h1>Your reset code is ${code}`,
     });
 };
 
