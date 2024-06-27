@@ -63,6 +63,15 @@ const getDefaultDatabasePort = (dialect: Dialect): number => {
 
 if (NATTER_DB_DIALECT === "sqlite" && !NATTER_DB_DATABASE) {
     logger.warn("No database file specified. Creating temporary database in memory.");
+} else if (NATTER_DB_DIALECT === "sqlite") {
+    logger.info(`Using sqlite database in file ${NATTER_DB_DATABASE}`)
+} else {
+    logger.info({
+        user: NATTER_DB_USERNAME,
+        database: NATTER_DB_DATABASE,
+        host: NATTER_DB_HOST,
+        port: NATTER_DB_PORT
+    }, `Connecting to external ${NATTER_DB_DIALECT} database`);
 }
 
 // Generate parameters
