@@ -28,6 +28,7 @@ const strings = {
     two_factor_enabled: "2FA enabled successfully.",
     two_factor_disabled: "2FA disabled successfully.",
     generate_2fa_first: "You must request to generate a secret first.",
+    email_resent: "Email resent.",
 };
 
 export default strings;

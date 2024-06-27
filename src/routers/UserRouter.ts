@@ -177,6 +177,31 @@ UserRouter.post("/register/verify", async (req, res) => {
     }
 });
 
+UserRouter.post("/register/resend_email", async (req, res) => {
+    // 200 400 404 500
+    try {
+        const { verification } = req.body;
+
+        if (!verification) return res.status(400).json({ msg: strings.bad_request });
+
+        const verificationEmail: UserVerificationEmail | null = await UserVerificationEmail.findOne({ where: { uuid: verification }, include: [User] });
+
+        if (verificationEmail === null)
+            return res.status(404).json({msg: strings.not_found});
+
+        verificationEmail.code = generateEmailCode();
+
+        await sendVerificationEmail(verificationEmail.user.email, verificationEmail.code);
+
+        await verificationEmail.save();
+
+        return res.status(200).json({msg: strings.email_resent});
+    } catch (err) {
+        logger.error(err, "resend email error");
+        res.status(500).json({msg: strings.internal_server_error});
+    }
+});
+
 UserRouter.post("/enable_2fa", authenticate, async (req, res) => {
     // 202 409 500
     try {
