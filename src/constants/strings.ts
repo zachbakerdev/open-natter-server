@@ -33,6 +33,7 @@ const strings = {
     password_reset_success: "Password reset successfully.",
     verification_accepted: "verification code accepted.",
     expired: "Expired.",
+    user_found: "User found successfully.",
 };
 
 export default strings;

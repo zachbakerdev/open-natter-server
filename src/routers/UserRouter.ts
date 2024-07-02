@@ -41,6 +41,24 @@ const isUserAllowedAdmin = async (email: string): Promise<boolean> => {
     return registration.admin;
 };
 
+UserRouter.get(":userUuid", async (req, res) => {
+    try {
+        const { userUuid } = req.params;
+
+        const user = await User.findOne({ where: { uuid: userUuid } });
+
+        if (user === null)
+            return res.status(404).json({ msg: strings.not_found });
+
+        const { username } = user;
+
+        res.status(200).json({ msg: strings.user_found, username });
+    } catch (err) {
+        logger.error(err, "Get user error");
+        res.status(500).json({ msg: strings.internal_server_error });
+    }
+});
+
 UserRouter.post("/register", async (req, res) => {
     // 200 400 403 409 500
     try {
