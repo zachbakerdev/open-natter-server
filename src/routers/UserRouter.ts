@@ -394,6 +394,9 @@ UserRouter.post("/login/reset_password", async (req, res) => {
         if (forgotPassword === null)
             return res.status(404).json({ msg: strings.not_found });
 
+        if (forgotPassword.createdAt.getTime() + 3600000 > Date.now())
+            return res.status(410).json({ msg: strings.expired });
+
         if (forgotPassword.code !== code)
             return res
                 .status(403)

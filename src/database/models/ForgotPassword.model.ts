@@ -1,5 +1,16 @@
 import { DataTypes } from "sequelize";
-import { AllowNull, BelongsTo, Column, Default, ForeignKey, Model, PrimaryKey, Table } from "sequelize-typescript";
+import {
+    AllowNull,
+    BelongsTo,
+    Column,
+    CreatedAt,
+    Default,
+    ForeignKey,
+    Model,
+    PrimaryKey,
+    Table,
+    UpdatedAt,
+} from "sequelize-typescript";
 import User from "./User.model";
 
 @Table
@@ -20,4 +31,10 @@ export default class ForgotPassword extends Model {
 
     @BelongsTo(() => User)
     user: User;
+
+    @CreatedAt
+    createdAt: Date;
+
+    @UpdatedAt
+    updatedAt: Date;
 }
