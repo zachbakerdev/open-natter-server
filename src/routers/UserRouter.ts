@@ -399,12 +399,23 @@ UserRouter.post("/login/reset_pasword", async (req, res) => {
                 .status(403)
                 .json({ msg: strings.invalid_verification_code });
 
+        let passwordValid = true;
+        if (!PASSWORD_COMPLETE.test(password)) passwordValid = false;
+        if (!PASSWORD_LOWERCASE.test(password)) passwordValid = false;
+        if (!PASSWORD_UPPERCASE.test(password)) passwordValid = false;
+        if (!PASSWORD_NUMBER.test(password)) passwordValid = false;
+        if (!PASSWORD_SPECIAL_CHARACTER.test(password)) passwordValid = false;
+        if (!passwordValid) {
+            return res.status(400).json({ msg: strings.invalid_password });
+        }
+
         const hashed_password = await argon2.hash(password, {
             type: argon2.argon2id,
         });
 
         forgotPassword.user.password = hashed_password;
         await forgotPassword.user.save();
+        await forgotPassword.destroy();
 
         return res.status(200).json({ msg: strings.password_reset_success });
     } catch (err) {
