@@ -24,19 +24,25 @@ app.use(prefix + "/server", ServerRouter);
 app.use(prefix + "/channel", ChannelRouter);
 app.use(prefix + "/files", FileRouter);
 
-app.use(prefix + "/files", express.static("upload", {fallthrough: false, index: false}));
+app.use(
+    prefix + "/files",
+    express.static("upload", { fallthrough: false, index: false }),
+);
 
 app.use(prefix + "/*", (req, res) => {
-    res.status(404).json({msg: strings.not_found})
+    res.status(404).json({ msg: strings.not_found });
 });
 
-app.use("*", proxy("http://127.0.0.1:3000/", {
-    proxyReqPathResolver: req => req.originalUrl
-}));
+app.use(
+    "*",
+    proxy("http://127.0.0.1:3000/", {
+        proxyReqPathResolver: (req) => req.originalUrl,
+    }),
+);
 
 // Sync database and start server
 sequelize
-    .sync({ alter: true })
+    .sync()
     .then(() => {
         sequelizeLogger.info("Database Sync Completed");
         logger.info("Database Sync Completed");
