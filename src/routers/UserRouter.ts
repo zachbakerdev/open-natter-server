@@ -382,7 +382,7 @@ UserRouter.post("/login/forgot_password/check_code", async (req, res) => {
     }
 });
 
-UserRouter.post("/login/reset_pasword", async (req, res) => {
+UserRouter.post("/login/reset_password", async (req, res) => {
     try {
         const { key, code, password } = req.body;
 
