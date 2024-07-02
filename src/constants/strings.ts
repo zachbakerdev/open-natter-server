@@ -31,6 +31,7 @@ const strings = {
     email_resent: "Email resent.",
     recovery_sent: "Recovery code sent.",
     password_reset_success: "Password reset successfully.",
+    verification_accepted: "verification code accepted.",
 };
 
 export default strings;

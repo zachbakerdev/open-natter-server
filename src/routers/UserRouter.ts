@@ -347,9 +347,37 @@ UserRouter.post("/login/forgot_password", async (req, res) => {
 
         await sendForgotPasswordEmail(user.email, forgotPassword.code);
 
-        return res.status(200).json({ msg: strings.recovery_sent });
+        return res
+            .status(200)
+            .json({ msg: strings.recovery_sent, uuid: forgotPassword.uuid });
     } catch (err) {
         logger.error(err, "forgot password error");
+        res.status(500).json({ msg: strings.internal_server_error });
+    }
+});
+
+UserRouter.post("/login/forgot_password/check_code", async (req, res) => {
+    try {
+        const { uuid, code } = req.body;
+
+        if (uuid === undefined || code === undefined)
+            return res.status(400).json({ msg: strings.bad_request });
+
+        const forgotPassword = await ForgotPassword.findOne({
+            where: { uuid },
+        });
+
+        if (forgotPassword === null)
+            return res.status(404).json({ msg: strings.not_found });
+
+        if (forgotPassword.code !== code)
+            return res
+                .status(403)
+                .json({ msg: strings.invalid_verification_code });
+
+        return res.status(200).json({ msg: strings.verification_accepted });
+    } catch (err) {
+        logger.error(err, "forgot password code check error");
         res.status(500).json({ msg: strings.internal_server_error });
     }
 });
