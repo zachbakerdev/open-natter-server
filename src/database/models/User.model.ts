@@ -9,7 +9,7 @@ import {
     Model,
     PrimaryKey,
     Table,
-    Unique
+    Unique,
 } from "sequelize-typescript";
 import AuditLogEntry from "./AuditLogEntry.model";
 import ForgotPassword from "./ForgotPassword.model";
@@ -65,22 +65,37 @@ class User extends Model {
     @Column(DataTypes.BOOLEAN)
     canCreateServers: boolean;
 
-    @HasMany(() => AuditLogEntry)
+    @HasMany(() => AuditLogEntry, {
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+    })
     auditLogEntries: AuditLogEntry[];
 
-    @HasMany(() => Server)
+    @HasMany(() => Server, {
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+    })
     servers: Server[];
 
-    @HasMany(() => UserChannelOverride)
+    @HasMany(() => UserChannelOverride, {
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+    })
     channelOverrides: UserChannelOverride[];
 
     @BelongsToMany(() => Role, () => UserRoleAssignment)
     roles: Role[];
 
-    @HasMany(() => UserVerificationEmail)
+    @HasMany(() => UserVerificationEmail, {
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+    })
     verificationEmails: UserVerificationEmail[];
 
-    @HasMany(() => ForgotPassword)
+    @HasMany(() => ForgotPassword, {
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+    })
     forgotPasswords: ForgotPassword[];
 }
 
