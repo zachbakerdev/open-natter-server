@@ -34,6 +34,7 @@ const strings = {
     verification_accepted: "verification code accepted.",
     expired: "Expired.",
     user_found: "User found successfully.",
+    retrieve_success: "Retrieved successfully.",
 };
 
 export default strings;

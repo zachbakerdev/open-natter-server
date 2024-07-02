@@ -59,6 +59,36 @@ UserRouter.get(":userUuid", async (req, res) => {
     }
 });
 
+UserRouter.get<{}, {}, {}, { filter: string }>("/multi", async (req, res) => {
+    try {
+        const { filter }: { filter: string } = req.query;
+
+        const uuids = filter.split(",");
+
+        const promiseArray: Promise<User | null>[] = [];
+
+        uuids.forEach((uuid) => {
+            promiseArray.push(User.findOne({ where: { uuid } }));
+        });
+
+        Promise.all(promiseArray).then((values) => {
+            const responseData: { [key: string]: string | null } = {};
+
+            uuids.forEach((uuid, index) => {
+                responseData[uuid] =
+                    values[index] === null ? null : values[index]!.username;
+            });
+
+            return res
+                .status(200)
+                .json({ msg: strings.retrieve_success, users: responseData });
+        });
+    } catch (err) {
+        logger.error(err, "get user list error");
+        res.status(500).json({ msg: strings.internal_server_error });
+    }
+});
+
 UserRouter.post("/register", async (req, res) => {
     // 200 400 403 409 500
     try {
