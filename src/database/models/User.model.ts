@@ -15,6 +15,7 @@ import AuditLogEntry from "./AuditLogEntry.model";
 import ForgotPassword from "./ForgotPassword.model";
 import Role from "./Role.model";
 import Server from "./Server.model";
+import Token from "./Token.model";
 import UserChannelOverride from "./UserChannelOverride.model";
 import UserRoleAssignment from "./UserRoleAssignment.model";
 import UserVerificationEmail from "./UserVerificationEmail.model";
@@ -97,6 +98,12 @@ class User extends Model {
         onDelete: "CASCADE",
     })
     forgotPasswords: ForgotPassword[];
+
+    @HasMany(() => Token, {
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+    })
+    tokens: Token[];
 }
 
 export default User;
